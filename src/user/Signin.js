@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-
+import { Redirect } from 'react-router-dom';
+import { signin, authenticate } from '../auth';
 class Signin extends Component {
   constructor() {
     super();
@@ -7,7 +8,8 @@ class Signin extends Component {
       email: '',
       password: '',
       error: '',
-      redirectToReferer: false
+      redirectToReferer: false,
+      loading: false
     };
   }
   handleChange = (name) => (event) => {
@@ -15,8 +17,10 @@ class Signin extends Component {
     this.setState({ [name]: event.target.value });
     console.log(name);
   };
+
   clickSubmit = (event) => {
     event.preventDefault();
+    this.setState({ loading: true });
     const { email, password } = this.state;
     const user = {
       //data of inut fields
@@ -24,28 +28,18 @@ class Signin extends Component {
       password
     };
     console.log(user);
-    this.signin(user).then((data) => {
-      if (data.error) this.setState({ error: data.error });
+    signin(user).then((data) => {
+      if (data.error) this.setState({ error: data.error, loading: false });
       else {
         //authenticate if username and password matches or not
+        authenticate(data, () => {
+          this.setState({ redirectToReferer: true });
+        });
         //redirect the user if true
       }
     }); ///methods
   };
-  signin = (user) => {
-    return fetch('http://localhost:8080/signin', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'content-Type': 'application/json'
-      },
-      body: JSON.stringify(user)
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((err) => console.log(err));
-  };
+
   signinForm = (
     email,
     password //using this method in render so that render will be maintainable and short
@@ -75,7 +69,10 @@ class Signin extends Component {
     </form>
   );
   render() {
-    const { email, password, error } = this.state;
+    const { email, password, error, redirectToReferer, loading } = this.state;
+    if (redirectToReferer) {
+      return <Redirect to="/" />;
+    }
     return (
       <div className="container">
         <h2 className="mt-5 mb-5 ">Signin</h2>
@@ -85,6 +82,13 @@ class Signin extends Component {
         >
           {error}
         </div>
+        {loading ? (
+          <div className="jumbotron text-center">
+            <h2>Loading...</h2>
+          </div>
+        ) : (
+          ''
+        )}
         {this.signinForm(email, password)}
       </div>
     );
