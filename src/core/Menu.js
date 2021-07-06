@@ -51,13 +51,21 @@ const Menu = ({ history }) => (
               Sign Out
             </a>
           </li>
-          <li className="nav-item" style={{ cursor: 'pointer', color: '#fff' }}>
-            <a className="nav-link">{isAuthenticated().user.name}</a>
+          <li className="nav-item">
+            <a>
+              <Link
+                to={`/user/${isAuthenticated().user._id}`}
+                className="nav-link"
+                style={
+                  (isActive(history, '/signup'),
+                  { cursor: 'pointer', color: 'blue' })
+                }
+              >{`${isAuthenticated().user.name}'s profile`}</Link>
+            </a>
           </li>
         </>
       )}
     </ul>
-    ;
   </div>
 );
 
