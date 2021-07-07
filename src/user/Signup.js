@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { signup } from '../auth';
-
+import { Link } from 'react-router-dom';
 export default class Signup extends Component {
   constructor() {
     super();
@@ -92,7 +92,8 @@ export default class Signup extends Component {
           className="alert alert-info"
           style={{ display: open ? '' : 'none' }}
         >
-          SignUp Successful! New account is created
+          SignUp Successful! New account is created Please{''}
+          <Link to="/signin">SignIn</Link>
         </div>
         {this.signupForm(name, email, password)}
       </div>
